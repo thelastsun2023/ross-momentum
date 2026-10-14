@@ -3,6 +3,7 @@ const seeds=[['RSMO',4.82,24.8,6.2,3.4],['BLZE',8.35,18.4,4.8,7.1],['VRTX-SIM',1
 function fresh(){return {cash:START,daily:500,tick:0,seed:73421,locked:false,positions:[],trades:[],stocks:seeds.map(([symbol,price,gap,rvol,float])=>({symbol,price,base:price/(1+gap/100),rvol,float,history:Array.from({length:60},(_,i)=>price*(.97+.03*i/59))}))};}
 let s=fresh(),selected=s.stocks[0].symbol,timer=null,storage=true;
 try{let saved=JSON.parse(localStorage.getItem(KEY));if(saved&&saved.stocks?.length===4&&Number.isFinite(saved.cash)&&Array.isArray(saved.positions)&&Array.isArray(saved.trades))s=saved;}catch{}
+selected=s.stocks[0].symbol;
 const money=n=>n.toLocaleString('en-US',{style:'currency',currency:'USD'}),stock=symbol=>s.stocks.find(x=>x.symbol===symbol),equity=()=>s.cash+s.positions.reduce((a,p)=>a+p.qty*stock(p.symbol).price,0),remaining=()=>Math.max(0,s.daily-Math.max(0,START-equity())),openRisk=()=>s.positions.reduce((a,p)=>a+Math.max(0,stock(p.symbol).price-p.stop+SLIP)*p.qty,0);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(s));}catch{storage=false;$('status').textContent='本地存储不可用；关闭页面后本次记录将丢失。';}}
 function note(t){$('status').textContent=t;}
